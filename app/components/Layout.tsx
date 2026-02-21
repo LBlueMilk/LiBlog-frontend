@@ -75,7 +75,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <div className="bg-emerald-400" />
                 </div>
                 <span className="text-base text-amber-400 group-hover:text-amber-300 transition-colors hidden sm:inline">
-                  像素日記
+                  麻糬的寂靜嶺
                 </span>
               </Link>
 

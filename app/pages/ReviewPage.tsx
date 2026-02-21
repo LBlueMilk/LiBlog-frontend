@@ -14,17 +14,7 @@ export default function ReviewPage() {
   const { isOwner, currentUser } = useAuth();
   const { getReportedComments, approveReport, rejectReport, articles } = useBlog();
 
-  // 非管理員：導回文章列表（避免 render 階段直接導頁）
-  useEffect(() => {
-    // 你如果定義「未登入也一定不是 owner」，這段可更簡化
-    if (!currentUser || !isOwner) {
-      router.replace("/articles");
-    }
-  }, [currentUser, isOwner, router]);
-
-  // 避免閃畫面
-  if (!currentUser || !isOwner) return null;
-
+  // ✅ hooks 永遠先跑完，再決定要不要 render
   const reported = getReportedComments();
 
   const articleMap = useMemo(() => {
@@ -32,6 +22,13 @@ export default function ReviewPage() {
     for (const a of articles) map.set(a.id, a);
     return map;
   }, [articles]);
+
+  useEffect(() => {
+    if (!currentUser || !isOwner) router.replace("/articles");
+  }, [currentUser, isOwner, router]);
+
+  // ✅ 這個 return 可以留，但要放在所有 hooks 之後
+  if (!currentUser || !isOwner) return null;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
