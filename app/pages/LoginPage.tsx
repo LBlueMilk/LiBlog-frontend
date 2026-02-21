@@ -23,7 +23,7 @@ export default function LoginPage() {
     return raw && raw.startsWith("/") ? raw : "/articles";
   }, [searchParams]);
 
-  // ✅ 已登入：自動導回（避免在 render 階段 push/replace）
+  // 已登入：自動導回（避免在 render 階段 push/replace）
   useEffect(() => {
     if (currentUser) {
       router.replace(returnTo);
