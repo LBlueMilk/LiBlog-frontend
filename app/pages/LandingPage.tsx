@@ -9,20 +9,20 @@ const HTILE = 40;
 // House pixel map: 11 cols × 14 rows
 // 0=bg, 1=chimney, 2=roof, 3=wall, 4=window, 5=door
 const HOUSE_MAP = [
-  [0,0,0,1,1,0,0,0,0,0,0],
-  [0,0,0,1,1,0,0,0,0,0,0],
-  [0,0,0,0,0,2,0,0,0,0,0],
-  [0,0,0,0,2,2,2,0,0,0,0],
-  [0,0,0,2,2,2,2,2,0,0,0],
-  [0,0,2,2,2,2,2,2,2,0,0],
-  [0,2,2,2,2,2,2,2,2,2,0],
-  [0,3,3,3,3,3,3,3,3,3,0],
-  [0,3,4,4,3,3,3,4,4,3,0],
-  [0,3,4,4,3,3,3,4,4,3,0],
-  [0,3,3,3,3,3,3,3,3,3,0],
-  [0,3,3,3,5,5,5,3,3,3,0],
-  [0,3,3,3,5,5,5,3,3,3,0],
-  [0,3,3,3,5,5,5,3,3,3,0],
+  [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0],
+  [0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0],
+  [0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0],
+  [0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0],
+  [0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0],
+  [0, 3, 4, 4, 3, 3, 3, 4, 4, 3, 0],
+  [0, 3, 4, 4, 3, 3, 3, 4, 4, 3, 0],
+  [0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0],
+  [0, 3, 3, 3, 5, 5, 5, 3, 3, 3, 0],
+  [0, 3, 3, 3, 5, 5, 5, 3, 3, 3, 0],
+  [0, 3, 3, 3, 5, 5, 5, 3, 3, 3, 0],
 ];
 
 const HOUSE_ROWS = HOUSE_MAP.length;
@@ -290,7 +290,10 @@ export default function LandingPage() {
     <div className="fixed inset-0 overflow-hidden bg-black">
       <canvas ref={canvasRef} className="block w-full h-full" />
       {entering && (
-        <div className="fixed inset-0 bg-black pointer-events-none transition-opacity duration-700 opacity-100" />
+        <div
+          className="fixed inset-0 bg-black pointer-events-none transition-opacity duration-700"
+          style={{ opacity: 0.6 }}
+        />
       )}
     </div>
   );

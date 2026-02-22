@@ -1,13 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useBlog } from "@/app/context/BlogContext";
 import type { Article } from "@/app/data/mockData";
 
-import { Search, Tag, Clock, ChevronDown, ChevronRight, CalendarDays, X } from "lucide-react";
+import {
+  Search, Tag, Clock, ChevronDown, ChevronRight, CalendarDays, X,
+  Home, ExternalLink
+} from "lucide-react";
 
 function ArticleCard({ article }: { article: Article }) {
   const router = useRouter();
@@ -74,53 +76,97 @@ function Timeline({ articles }: { articles: Article[] }) {
   };
 
   return (
-    <div className="space-y-1">
-      <h3 className="text-xs uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
-        <CalendarDays size={12} />
-        文章時間軸
-      </h3>
+    <div className="flex flex-col h-full">
+      {/* 上半部：可滾動的時間軸 */}
+      <div className="flex-1 overflow-auto pr-1">
+        <h3 className="text-xs uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
+          <CalendarDays size={12} />
+          文章時間軸
+        </h3>
 
-      {byMonth.map(([key, data]) => (
-        <div key={key}>
-          <button
-            onClick={() => toggle(key)}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-left group transition-colors"
-          >
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
-              <span className="text-sm text-slate-300 group-hover:text-amber-400 transition-colors">
-                {data.label}
-              </span>
+        {byMonth.map(([key, data]) => (
+          <div key={key}>
+            <button
+              onClick={() => toggle(key)}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-left group transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
+                <span className="text-sm text-slate-300 group-hover:text-amber-400 transition-colors">
+                  {data.label}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-slate-500 bg-slate-700 px-1.5 py-0.5 rounded-full">
+                  {data.articles.length}
+                </span>
+                {expanded.has(key) ? (
+                  <ChevronDown size={12} className="text-slate-500" />
+                ) : (
+                  <ChevronRight size={12} className="text-slate-500" />
+                )}
+              </div>
+            </button>
+
+            {expanded.has(key) && (
+              <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-slate-700 pl-3">
+                {data.articles.map((article) => (
+                  <button
+                    key={article.id}
+                    onClick={() => router.push(`/articles/${article.id}`)}
+                    className="block w-full text-left text-xs text-slate-400 hover:text-amber-400 py-1 truncate transition-colors"
+                    title={article.title}
+                  >
+                    {article.title}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+
+        {/* Projects：放在滾動區的底部 */}
+        <div className="mt-6 space-y-3 border-t border-slate-700 pt-4">
+          <div className="space-y-2">
+            <div className="text-xs uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <ExternalLink size={12} />
+              隨意搞搞的專案連結
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-slate-500 bg-slate-700 px-1.5 py-0.5 rounded-full">
-                {data.articles.length}
-              </span>
-              {expanded.has(key) ? (
-                <ChevronDown size={12} className="text-slate-500" />
-              ) : (
-                <ChevronRight size={12} className="text-slate-500" />
-              )}
-            </div>
-          </button>
+            <a
+              href="https://story-building-site-fe.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700/60 border border-slate-700 text-sm text-slate-300 transition-colors"
+            >
+              <span>小說故事記錄網</span>
+              <ExternalLink size={14} className="text-slate-500" />
+            </a>
 
-          {expanded.has(key) && (
-            <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-slate-700 pl-3">
-              {data.articles.map((article) => (
-                <button
-                  key={article.id}
-                  onClick={() => router.push(`/articles/${article.id}`)}
-                  className="block w-full text-left text-xs text-slate-400 hover:text-amber-400 py-1 truncate transition-colors"
-                  title={article.title}
-                >
-                  {article.title}
-                </button>
-              ))}
-            </div>
-          )}
+            <a
+              href="https://example.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700/60 border border-slate-700 text-sm text-slate-300 transition-colors"
+            >
+              <span>我的專案 2</span>
+              <ExternalLink size={14} className="text-slate-500" />
+            </a>
+          </div>
         </div>
-      ))}
+      </div>
+
+      {/* 最底：回到山丘（固定貼底，不跟著滾動） */}
+      <div className="mt-auto pt-4">
+        <button
+          onClick={() => router.push("/?forceLanding=1")}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700/60 border border-slate-700 text-sm text-slate-300 transition-colors"
+        >
+          <Home size={14} className="text-slate-500" />
+          回到山丘
+        </button>
+      </div>
     </div>
   );
 }
@@ -194,11 +240,10 @@ export default function ArticlesPage() {
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
-                    selectedTags.has(tag)
-                      ? "bg-amber-500 border-amber-500 text-white"
-                      : "bg-slate-800 border-slate-600 text-slate-400 hover:border-amber-500/50 hover:text-slate-200"
-                  }`}
+                  className={`text-xs px-2.5 py-1 rounded-full border transition-all ${selectedTags.has(tag)
+                    ? "bg-amber-500 border-amber-500 text-white"
+                    : "bg-slate-800 border-slate-600 text-slate-400 hover:border-amber-500/50 hover:text-slate-200"
+                    }`}
                 >
                   #{tag}
                 </button>
@@ -233,7 +278,7 @@ export default function ArticlesPage() {
         </div>
 
         <aside className="w-56 flex-shrink-0 hidden lg:block">
-          <div className="sticky top-24">
+          <div className="sticky top-24 h-[calc(100vh-6rem)] flex flex-col min-h-0">
             <Timeline articles={articles} />
           </div>
         </aside>
