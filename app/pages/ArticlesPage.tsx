@@ -2,13 +2,15 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { useBlog } from "@/app/context/BlogContext";
+import { useAuth } from "@/app/context/AuthContext";
 import type { Article } from "@/app/data/mockData";
 
 import {
   Search, Tag, Clock, ChevronDown, ChevronRight, CalendarDays, X,
-  Home, ExternalLink
+  Home, ExternalLink, Plus
 } from "lucide-react";
 
 function ArticleCard({ article }: { article: Article }) {
@@ -159,13 +161,13 @@ function Timeline({ articles }: { articles: Article[] }) {
 
       {/* 最底：回到山丘（固定貼底，不跟著滾動） */}
       <div className="mt-auto pt-4">
-        <button
-          onClick={() => router.push("/?forceLanding=1")}
+        <Link
+          href="/"
           className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700/60 border border-slate-700 text-sm text-slate-300 transition-colors"
         >
           <Home size={14} className="text-slate-500" />
           回到山丘
-        </button>
+        </Link>
       </div>
     </div>
   );
@@ -173,6 +175,7 @@ function Timeline({ articles }: { articles: Article[] }) {
 
 export default function ArticlesPage() {
   const { articles } = useBlog();
+  const { isOwner } = useAuth();
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
 
@@ -260,9 +263,21 @@ export default function ArticlesPage() {
             </div>
           </div>
 
-          <div className="text-xs text-slate-500 mb-4">
-            共 {filtered.length} 篇文章
-            {(search || selectedTags.size > 0) && " (已篩選)"}
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-xs text-slate-500">
+              共 {filtered.length} 篇文章
+              {(search || selectedTags.size > 0) && " (已篩選)"}
+            </div>
+
+            {isOwner && (
+              <Link
+                href="/write"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 hover:text-orange-300 text-xs transition-all border border-orange-500/30"
+              >
+                <Plus size={13} />
+                新增文章
+              </Link>
+            )}
           </div>
 
           <div className="space-y-4">

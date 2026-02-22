@@ -20,6 +20,7 @@ import {
   X,
   AlertTriangle,
   MessageSquare,
+  EyeOff,
 } from "lucide-react";
 
 function renderContent(text: string) {
@@ -215,7 +216,9 @@ export default function ArticleDetailPage() {
   const router = useRouter();
 
   const { articles, getCommentsForArticle, addComment, editComment, deleteComment, reportComment } = useBlog();
-  const { currentUser } = useAuth();
+  const { currentUser, isOwner } = useAuth();
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [hideConfirm, setHideConfirm] = useState(false);
 
   const [newComment, setNewComment] = useState("");
   const [loginWarning, setLoginWarning] = useState(false);
@@ -252,16 +255,120 @@ export default function ArticleDetailPage() {
     setNewComment("");
   };
 
+  const handleEditArticle = () => {
+    router.push(`/edit/${article.id}`);
+  };
+
+  const handleDeleteArticle = () => {
+    // TODO: 你之後在 BlogContext 實作 deleteArticle(articleId)
+    // deleteArticle(article.id);
+
+    // 先用最保守的做法：導回列表（避免停在不存在頁）
+    router.push("/articles");
+  };
+
+  const handleHideArticle = () => {
+    // TODO: 你之後在 BlogContext 實作 setArticleVisibility(articleId, false) 或 updateArticle(...)
+    // hideArticle(article.id);
+
+    // 先做 UI 行為：隱藏完導回列表
+    router.push("/articles");
+  };
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <button
-        onClick={() => router.push("/articles")}
-        className="flex items-center gap-2 text-slate-500 hover:text-amber-400 text-sm mb-6 transition-colors"
-      >
-        <ArrowLeft size={14} />
-        返回文章列表
-      </button>
+      {/* Header bar：左返回 + 右操作 */}
+      <div className="flex items-center justify-between mb-6">
+        <button
+          onClick={() => router.push("/articles")}
+          className="flex items-center gap-2 text-slate-500 hover:text-amber-400 text-sm transition-colors"
+        >
+          <ArrowLeft size={14} />
+          返回文章列表
+        </button>
 
+        {isOwner && (
+          <div className="flex items-center gap-2">
+            {/* 修改 */}
+            <button
+              onClick={handleEditArticle}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs transition"
+              title="修改文章"
+            >
+              <Edit2 size={13} />
+              修改
+            </button>
+
+            {/* 隱藏（含二次確認） */}
+            {hideConfirm ? (
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-orange-300">確定隱藏?</span>
+                <button
+                  onClick={handleHideArticle}
+                  className="p-1.5 rounded-full text-orange-300 hover:bg-orange-500/20 transition"
+                  title="確認隱藏"
+                >
+                  <Check size={13} />
+                </button>
+                <button
+                  onClick={() => setHideConfirm(false)}
+                  className="p-1.5 rounded-full text-slate-400 hover:bg-slate-700 transition"
+                  title="取消"
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setHideConfirm(true);
+                  setDeleteConfirm(false);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/15 hover:bg-orange-500/25 text-orange-300 border border-orange-500/30 text-xs transition"
+                title="隱藏文章"
+              >
+                <EyeOff size={13} />
+                隱藏
+              </button>
+            )}
+
+            {/* 刪除（含二次確認） */}
+            {deleteConfirm ? (
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-red-300">確定刪除?</span>
+                <button
+                  onClick={handleDeleteArticle}
+                  className="p-1.5 rounded-full text-red-300 hover:bg-red-500/20 transition"
+                  title="確認刪除"
+                >
+                  <Check size={13} />
+                </button>
+                <button
+                  onClick={() => setDeleteConfirm(false)}
+                  className="p-1.5 rounded-full text-slate-400 hover:bg-slate-700 transition"
+                  title="取消"
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setDeleteConfirm(true);
+                  setHideConfirm(false);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/15 hover:bg-red-500/25 text-red-300 border border-red-500/30 text-xs transition"
+                title="刪除文章"
+              >
+                <Trash2 size={13} />
+                刪除
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 文章內容 */}
       <article className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 sm:p-8 mb-10">
         <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mb-4">
           <div className="flex items-center gap-1.5">
